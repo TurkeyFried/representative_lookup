@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\hello_world\Controller;
+namespace Drupal\canadian_representatives\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 
 /**
- * Defines HelloController class.
+ * Defines LookupController class.
  */
-class HelloController extends ControllerBase {
+class LookupController extends ControllerBase {
 
   /**
    * Display the markup.

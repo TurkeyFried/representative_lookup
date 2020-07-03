@@ -1,5 +1,5 @@
-name: Hello World Module
-description: Creates a page showing "Hello World".
+name: Canadian Representatives Module
+description: Creates a form for looking up Canadian representatives based on a given Postal Code.
 package: Custom
 
 type: module

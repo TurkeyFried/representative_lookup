@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\hello_world\Plugin\Block;
+namespace Drupal\canadian_representatives\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;

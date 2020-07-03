@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\loremipsum\Form;
+namespace Drupal\canadian_representatives\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;

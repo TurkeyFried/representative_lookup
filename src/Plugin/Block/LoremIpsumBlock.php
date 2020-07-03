@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\loremipsum\Plugin\Block;
+namespace Drupal\canadian_representatives\Plugin\Block;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Block\BlockBase;

@@ -1,7 +1,7 @@
-hello_world.content:
-  path: '/hello'
+canadian_representatives.content:
+  path: '/canadian_representatives'
   defaults:
-    _controller: '\Drupal\hello_world\Controller\HelloController::content'
-    _title: 'Hello World'
+    _controller: '\Drupal\canadian_representatives\Controller\LookupController::content'
+    _title: 'Representative Lookup'
   requirements:
     _permission: 'access content'
