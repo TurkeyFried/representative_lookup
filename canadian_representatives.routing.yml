@@ -1,7 +1,0 @@
-canadian_representatives.content:
-  path: '/canadian_representatives'
-  defaults:
-    _controller: '\Drupal\canadian_representatives\Controller\LookupController::content'
-    _title: 'Representative Lookup'
-  requirements:
-    _permission: 'access content'

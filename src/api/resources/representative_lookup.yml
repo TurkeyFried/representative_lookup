@@ -1,0 +1,6 @@
+name: "Open North Represent API"
+apiVersion: "1.0"
+description: "Client wrapper for the Represent API."
+imports:
+  - "resources/contents/models.yml"
+  - "resources/contents/operations.yml"

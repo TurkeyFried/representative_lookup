@@ -1,0 +1,6 @@
+representative_lookup.contents:
+  title: "name: "Open North Represent API""
+  api_path: "src/api/representative_lookup.yml"
+  config:
+    base_uri: "https://represent.opennorth.ca/api/"
+    debug: "/tmp/http.log"
