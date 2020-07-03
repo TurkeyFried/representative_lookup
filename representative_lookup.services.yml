@@ -1,4 +1,0 @@
-services:
-  representative_lookup.http_client.contents:
-    parent: http_client_manager.client_base
-    arguments: ['representative_lookup.contents']

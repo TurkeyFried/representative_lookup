@@ -3,8 +3,8 @@
 namespace Drupal\representative_lookup\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\http_client_manager\HttpClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use GuzzleHttp\Client;
 
 /**
  * Defines LookupController class.
@@ -12,14 +12,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class LookupController extends ControllerBase {
 
   /**
-   * @var \Drupal\http_client_manager\HttpClientInterface
+   * @var \Guzzle\Client
    */
   protected $httpClient;
 
   /**
-   * @param \Drupal\http_client_manager\HttpClientInterface $http_client
+   * @param \Guzzle\Client $http_client
    */
-  public function __construct(HttpClientManagerFactoryInterface $http_client) {
+  public function __construct(Client $http_client) {
     $this->httpClient = $http_client;
   }
 
