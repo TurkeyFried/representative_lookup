@@ -106,7 +106,7 @@ class PostalLookupBlockForm extends FormBase {
   // Get the value from example select field and fill
   // the textbox with the selected text.
   public function getRepresentatives(array &$form, FormStateInterface $form_state) {
-    $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/api/' . strtoupper($form_state->getValue('postal')), [
+    $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . strtoupper($form_state->getValue('postal')), [
       // 'postal' => ,
       // 'limit' => (int) $limit,
       // 'sort' => $sort,
