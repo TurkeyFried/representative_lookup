@@ -43,7 +43,6 @@ class LookupController extends ControllerBase {
       'sort' => $sort,
     ]);
 
-
     $build = [
       '#theme' => 'representative_lookup_representatives_list',
       '#representatives' => [],
