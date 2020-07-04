@@ -14,13 +14,13 @@ class LookupController extends ControllerBase {
   /**
    * @var \Guzzle\Client
    */
-  protected $httpClient;
+  protected $client;
 
   /**
-   * @param \Guzzle\Client $http_client
+   * Load the client for all routes
    */
-  public function __construct(Client $http_client) {
-    $this->httpClient = $http_client;
+  public function __construct() {
+    $this->client = \Drupal::httpClient();
   }
 
   /**
@@ -37,7 +37,7 @@ class LookupController extends ControllerBase {
    *   A render array used to show the Representative list.
    */
   public function representatives($postal, $limit, $sort) {
-    $reps = $this->httpClient->getRepresentatives([
+    $reps = $this->client->getRepresentatives([
       'postal' => strtoupper($postal),
       'limit' => (int) $limit,
       'sort' => $sort,
