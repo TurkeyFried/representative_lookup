@@ -5,3 +5,11 @@ representative_lookup.content:
     _title: 'Representative Lookup'
   requirements:
     _permission: 'access content'
+
+representative_lookup.admin_settings:
+  path: '/admin/config/representative_lookup'
+  defaults:
+    _form: '\Drupal\representative_lookup\Form\ModuleConfigurationForm'
+    _title: 'Representative Lookup Settings'
+  requirements:
+    _permission: 'administer site configuration'

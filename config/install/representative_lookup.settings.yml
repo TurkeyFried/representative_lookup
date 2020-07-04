@@ -1,2 +1,2 @@
 representative_lookup:
-  name: 'Hank Williams'
+  default_limit: 25
