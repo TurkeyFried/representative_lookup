@@ -62,6 +62,19 @@ class LookupController extends ControllerBase {
       ];
     }
 
+
+    // foreach ($entries = getData() as $entry) {
+    //   $row = array_map('Drupal\Component\Utility\SafeMarkup::checkPlain', $entry);
+    //   $rows[] = $row;
+    // }
+    // $form['table'] = array(
+    //   '#type' => 'table',
+    //   '#header' => $headers,
+    //   '#rows' => $rows,
+    //   '#attributes' => array('id' => 'my-module-list'),
+    //   '#empty' => t('No entries available.'),
+    // );
+
     return $build;
   }
 
@@ -75,6 +88,9 @@ class LookupController extends ControllerBase {
     //@todo page should load form and empty table
     // then the API call response will trigger the response
     // how do we use JS here?
+    // $form_class = '\Drupal\my_module\Form\MyForm';
+    // $build['form'] = \Drupal::formBuilder()->getForm($form_class);
+
     return [
       '#type' => 'markup',
       '#markup' => $this->t('Hello, World!'),
