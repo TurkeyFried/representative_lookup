@@ -1,9 +1,8 @@
 representative_lookup.content:
   path: '/representative_lookup'
   defaults:
-    _controller: '\Drupal\representative_lookup\Controller\LookupController::content'
     _title: 'Representative Lookup'
-    _form: Drupal\representative_lookup\Form\PostalLookupBlockForm'
+    _form: '\Drupal\representative_lookup\Form\PostalLookupBlockForm'
   requirements:
     _permission: 'access content'
 
