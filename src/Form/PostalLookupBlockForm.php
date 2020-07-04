@@ -12,10 +12,6 @@ use Drupal\Core\Ajax\ReplaceCommand;
  */
 class PostalLookupBlockForm extends FormBase {
 
-  const HEADERS = [
-    //
-  ];
-
   /**
    * {@inheritdoc}
    */
@@ -48,7 +44,7 @@ class PostalLookupBlockForm extends FormBase {
         'callback' => '::getRepresentatives', // don't forget :: when calling a class method.
         'disable-refocus' => FALSE, // Or TRUE to prevent re-focusing on the triggering element.
         'event' => 'click',
-        'wrapper' => 'reps-table', // This element is updated with this AJAX callback.
+        'wrapper' => 'edit-reps-table', // This element is updated with this AJAX callback.
         'progress' => [
           'type' => 'throbber',
           'message' => $this->t('Getting representatives...'),
@@ -59,12 +55,11 @@ class PostalLookupBlockForm extends FormBase {
     $form['reps-table'] = [
       '#type' => 'table',
       '#header' => [
-        'name',
-        'representative_set_name',
-        'party_name',
-        'elected_office',
+        'Name',
+        'Party',
+        'Elected Office',
+        'Representative Set',
       ],
-      // '#options' => $output,
       '#empty' => t('No representatives found'),
     ];
 
@@ -106,31 +101,26 @@ class PostalLookupBlockForm extends FormBase {
   // Get the value from example select field and fill
   // the textbox with the selected text.
   public function getRepresentatives(array &$form, FormStateInterface $form_state) {
-    $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . strtoupper($form_state->getValue('postal')), [
-      // 'postal' => ,
-      // 'limit' => (int) $limit,
-      // 'sort' => $sort,
-    ]);
+    $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . strtoupper($form_state->getValue('postal')));
 
     // @todo validate response here
 
+    // $response = $response->getBody()->getContents();
+    $response = json_decode($response->getBody(), true);
     $reps = [];
 
-    foreach ($response['reps'] as $rep) {
+    foreach ($response['representatives_centroid'] as $rep) {
       $reps[] = [
-        'name' => $rep['name'],
-        'representative_set_name' => $rep['representative_set_name'],
-        'party_name' => $rep['party_name'],
-        'elected_office' => $rep['elected_office'],
+        $rep['name'],
+        $rep['party_name'],
+        $rep['elected_office'],
+        $rep['representative_set_name'],
       ];
     }
 
-    $form['output']['reps-table'] = [
-      '#options' => $reps,
-    ];
+    $form['reps-table']['#rows'] = $reps;
 
-    // Return the prepared textfield.
-    return $form['output'];
+    return $form['reps-table'];
   }
 
 }
