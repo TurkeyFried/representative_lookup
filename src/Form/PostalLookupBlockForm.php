@@ -101,21 +101,33 @@ class PostalLookupBlockForm extends FormBase {
   // Get the value from example select field and fill
   // the textbox with the selected text.
   public function getRepresentatives(array &$form, FormStateInterface $form_state) {
-    $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . strtoupper($form_state->getValue('postal')));
+    $postal = strtoupper($form_state->getValue('postal'));
 
-    // @todo validate response here
+    $cid = 'representative_lookup:' . $postal;
+    $data = NULL;
+    $cache = \Drupal::cache()->get($cid);
 
-    // $response = $response->getBody()->getContents();
-    $response = json_decode($response->getBody(), true);
-    $reps = [];
+    if ($cache) {
+      $reps = $cache->data;
+    } else {
+      $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . $postal);
 
-    foreach ($response['representatives_centroid'] as $rep) {
-      $reps[] = [
-        $rep['name'],
-        $rep['party_name'],
-        $rep['elected_office'],
-        $rep['representative_set_name'],
-      ];
+      // @todo validate response here
+
+      $response = json_decode($response->getBody(), true);
+
+      $reps = [];
+
+      foreach ($response['representatives_centroid'] as $rep) {
+        $reps[] = [
+          $rep['name'],
+          $rep['party_name'],
+          $rep['elected_office'],
+          $rep['representative_set_name'],
+        ];
+      }
+
+      \Drupal::cache()->set($cid, $reps, strtotime('+1 day'));
     }
 
     $form['reps-table']['#rows'] = $reps;
