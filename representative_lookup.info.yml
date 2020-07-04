@@ -3,4 +3,6 @@ description: Creates a form for looking up Canadian representatives based on a g
 package: Custom
 
 type: module
-core: 8.x
+core_version_requirement: 9.x
+
+configure: your_module.admin_settings
