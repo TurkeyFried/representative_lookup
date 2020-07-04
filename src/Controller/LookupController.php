@@ -24,15 +24,6 @@ class LookupController extends ControllerBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('representative_lookup.http_client.contents')
-    );
-  }
-
-  /**
    * Representatives route callback.
    *
    * @param string $postal
