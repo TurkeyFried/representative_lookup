@@ -62,14 +62,13 @@ class PostalLookupBlockForm extends FormBase {
     // }
   }
 
-  // /**
-  //  * {@inheritdoc}
-  //  */
-  // public function submitForm(array &$form, FormStateInterface $form_state) {
-  //   $form_state->setRedirect('loremipsum.generate', [
-  //     'paragraphs' => $form_state->getValue('paragraphs'),
-  //     'phrases' => $form_state->getValue('phrases'),
-  //   ]);
-  // }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->messenger()->addStatus($this->t('Your postal code is @postal', [
+      '@postal' => $form_state->getValue('postal'),
+    ]));
+  }
 
 }
