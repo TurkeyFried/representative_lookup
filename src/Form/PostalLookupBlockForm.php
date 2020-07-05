@@ -6,11 +6,23 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use GuzzleHttp\Exception\ClientException;
 
 /**
- * Lorem Ipsum block form
+ * Postal Lookup block form
  */
 class PostalLookupBlockForm extends FormBase {
+  // headers for the representative table
+  // @todo move stuff somewhere else?
+  const HEADERS = [
+    'name' => 'Name',
+    'party_name' => 'Party',
+    'elected_office' => 'Elected Office',
+    'representative_set_name' => 'Representative Set',
+  ];
+
+  private $reps = [];
+  private $errors = [];
 
   /**
    * {@inheritdoc}
@@ -28,20 +40,14 @@ class PostalLookupBlockForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Postal Code'),
       '#default_value' => '',
-      // '#description' => $this->t('Check Representatives for this area'),
     ];
 
     // Submit.
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Lookup'),
-      '#attributes' => [
-        'class' => [
-          'use-ajax-submit',
-        ],
-      ],
       '#ajax' => [
-        'callback' => '::getRepresentatives', // don't forget :: when calling a class method.
+        'callback' => '::lookupAjax', // don't forget :: when calling a class method.
         'disable-refocus' => FALSE, // Or TRUE to prevent re-focusing on the triggering element.
         'event' => 'click',
         'wrapper' => 'edit-reps-table', // This element is updated with this AJAX callback.
@@ -54,13 +60,11 @@ class PostalLookupBlockForm extends FormBase {
 
     $form['reps-table'] = [
       '#type' => 'table',
-      '#header' => [
-        'Name',
-        'Party',
-        'Elected Office',
-        'Representative Set',
+      '#header' => array_values(self::HEADERS),
+      '#empty' => $this->t('No representatives found'),
+      '#attributes' => [
+        'id' => 'edit-reps-table',
       ],
-      '#empty' => t('No representatives found'),
     ];
 
     return $form;
@@ -70,69 +74,83 @@ class PostalLookupBlockForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-
-    // @todo add validation for:
-    // URLs must include the postal code in uppercase letters with no spaces.
+    parent::validateForm($form, $form_state);
     $postal = $form_state->getValue('postal');
 
-    // $phrases = $form_state->getValue('phrases');
-    // if (!is_numeric($phrases)) {
-    //   $form_state->setErrorByName('phrases', $this->t('Please use a number.'));
-    // }
+    // https://stackoverflow.com/a/46761018/1978219
+    $regex = "/^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i";
 
-    // if (floor($phrases) != $phrases) {
-    //   $form_state->setErrorByName('phrases', $this->t('No decimals, please.'));
-    // }
+    if (!preg_match($regex, $postal)) {
+      // Response taken from https://en.wikipedia.org/wiki/Postal_codes_in_Canada
+      $form_state->setErrorByName('postal', $this->t('Postal Codes must be written as A1A1A1, where A are letters and 1 are numbers'));
+      return;
+    }
 
-    // if ($phrases < 1) {
-    //   $form_state->setErrorByName('phrases', $this->t('Please use a number greater than zero.'));
-    // }
+    $this->callApi($postal); // catch api errors while we can still set them
+
+    foreach ($this->errors as $error) {
+      $form_state->setErrorByName('reps-table', $error);
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->messenger()->addStatus($this->t('Your postal code is @postal', [
-      '@postal' => $form_state->getValue('postal'),
-    ]));
+    // abstract method. have not found what are best practices for it when doing ajax forms
   }
 
-  // Get the value from example select field and fill
-  // the textbox with the selected text.
-  public function getRepresentatives(array &$form, FormStateInterface $form_state) {
+  public function lookupAjax(array &$form, FormStateInterface $form_state) {
     $postal = strtoupper($form_state->getValue('postal'));
 
-    $cid = 'representative_lookup:' . $postal;
-    $data = NULL;
-    $cache = \Drupal::cache()->get($cid);
+    // iterate the cached value so we can expand the app to allow different columns
+    $rows = [];
 
-    if ($cache) {
-      $reps = $cache->data;
-    } else {
-      $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . $postal);
+    foreach ($this->reps as $rep) {
+      $row = [];
 
-      // @todo validate response here
-
-      $response = json_decode($response->getBody(), true);
-
-      $reps = [];
-
-      foreach ($response['representatives_centroid'] as $rep) {
-        $reps[] = [
-          $rep['name'],
-          $rep['party_name'],
-          $rep['elected_office'],
-          $rep['representative_set_name'],
-        ];
+      // simple tables on drupal use simple arrays
+      // double foreach is not ideal,
+      // but for array filtering it should be fine
+      foreach (array_keys(self::HEADERS) as $column) {
+        $row[] = isset($rep[$column]) ? $rep[$column] : '';
       }
 
-      \Drupal::cache()->set($cid, $reps, strtotime('+1 day'));
+      $rows[] = $row;
     }
 
-    $form['reps-table']['#rows'] = $reps;
+    $form['reps-table']['#rows'] = $rows;
 
     return $form['reps-table'];
+  }
+
+  public function callApi($postal) {
+    $this->reps = [];
+    $this->errors = [];
+
+    $cid = 'representative_lookup:test'. $postal;
+    //$cache = \Drupal::cache()->get($cid);
+
+    if ($cache) {
+      $this->reps = $cache->data;
+      return;
+    }
+
+    try {
+      $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . $postal);
+    } catch (ClientException $e) {
+      // @todo add logging for API errors
+      $this->errors[] = $this->t('Error attempting to download representatives. Please check your Postal Code and try again.');
+    }
+
+    if (!isset($response) || $response->getStatusCode() != 200) {
+      return;
+    }
+
+    $response = json_decode($response->getBody(), true);
+    $this->reps = $response['representatives_centroid'];
+
+    \Drupal::cache()->set($cid, $this->reps, strtotime('+1 day'));
   }
 
 }
