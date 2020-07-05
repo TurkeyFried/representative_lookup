@@ -9,7 +9,7 @@ use Drupal\Core\Ajax\ReplaceCommand;
 use GuzzleHttp\Exception\ClientException;
 
 /**
- * Postal Lookup block form
+ * Postal Lookup form
  */
 class PostalLookupForm extends FormBase {
   // headers for the representative table
@@ -28,7 +28,7 @@ class PostalLookupForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'postal_lookup_block_form';
+    return 'postal_lookup_form';
   }
 
   /**
