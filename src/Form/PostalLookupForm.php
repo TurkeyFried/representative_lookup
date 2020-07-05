@@ -129,7 +129,7 @@ class PostalLookupForm extends FormBase {
     $this->errors = [];
 
     // the api requires uppercase postal codes
-    $postal = strtoupper($form_state->getValue('postal'));
+    $postal = strtoupper($postal);
 
     // per-postal caches
     $cid = 'representative_lookup:'. $postal;
