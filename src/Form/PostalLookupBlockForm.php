@@ -67,6 +67,16 @@ class PostalLookupBlockForm extends FormBase {
       ],
     ];
 
+    // Finally add the pager.
+    $form['pager'] = [
+      '#type' => 'pager',
+    ];
+
+#element: (optional, int) The pager ID, to distinguish between multiple pagers on the same page (defaults to 0).
+#parameters: (optional) An associative array of query string parameters to append to the pager.
+#quantity: The maximum number of numbered page links to create (defaults to 9).
+#tags: (optional) An array of labels for the controls in the pages.
+#route_name: (optional) The name of the route to be used to build pager links. Defaults to '<none>', which will make links relative to the current URL. This makes the page more effectively cacheable.
     return $form;
   }
 
@@ -101,8 +111,6 @@ class PostalLookupBlockForm extends FormBase {
   }
 
   public function lookupAjax(array &$form, FormStateInterface $form_state) {
-    $postal = strtoupper($form_state->getValue('postal'));
-
     // iterate the cached value so we can expand the app to allow different columns
     $rows = [];
 
@@ -128,7 +136,12 @@ class PostalLookupBlockForm extends FormBase {
     $this->reps = [];
     $this->errors = [];
 
+    // the api requires uppercase postal codes
+    $postal = strtoupper($form_state->getValue('postal'));
+
+    // per-postal caches
     $cid = 'representative_lookup:test'. $postal;
+
     //$cache = \Drupal::cache()->get($cid);
 
     if ($cache) {
@@ -154,3 +167,11 @@ class PostalLookupBlockForm extends FormBase {
   }
 
 }
+
+// "meta": {
+//   "next": "/candidates/?limit=20&offset=20",
+//   "total_count": 597,
+//   "previous": null,
+//   "offset": 0,
+//   "limit": 20
+// }
