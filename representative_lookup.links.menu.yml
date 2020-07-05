@@ -1,6 +1,0 @@
-representative_lookup.admin:
-  title: 'Representative Lookup Settings'
-  description: 'this will only be built time-permitting'
-  parent: system.admin_config_development
-  route_name: representative_lookup.content
-  weight: 100

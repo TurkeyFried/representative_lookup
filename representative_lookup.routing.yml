@@ -2,14 +2,6 @@ representative_lookup.content:
   path: '/representative_lookup'
   defaults:
     _title: 'Representative Lookup'
-    _form: '\Drupal\representative_lookup\Form\PostalLookupBlockForm'
+    _form: '\Drupal\representative_lookup\Form\PostalLookupForm'
   requirements:
     _permission: 'access content'
-
-representative_lookup.admin_settings:
-  path: '/admin/config/representative_lookup'
-  defaults:
-    _form: '\Drupal\representative_lookup\Form\ModuleConfigurationForm'
-    _title: 'Representative Lookup Settings'
-  requirements:
-    _permission: 'administer site configuration'
