@@ -11,7 +11,7 @@ use GuzzleHttp\Exception\ClientException;
 /**
  * Postal Lookup form
  */
-class PostalLookupForm extends FormBase {
+class PostalLookupBlockForm extends FormBase {
   // headers for the representative table
   // @todo move stuff somewhere else?
   const HEADERS = [
@@ -28,7 +28,7 @@ class PostalLookupForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'postal_lookup_form';
+    return 'postal_lookup_block_form';
   }
 
   /**

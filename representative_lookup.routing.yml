@@ -2,6 +2,6 @@ representative_lookup.content:
   path: '/representative_lookup'
   defaults:
     _title: 'Representative Lookup'
-    _form: '\Drupal\representative_lookup\Form\PostalLookupForm'
+    _form: '\Drupal\representative_lookup\Form\PostalLookupBlockForm'
   requirements:
     _permission: 'access content'
