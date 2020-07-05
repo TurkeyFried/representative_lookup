@@ -22,7 +22,7 @@ class PostalLookupBlock extends BlockBase implements BlockPluginInterface {
    */
   public function build() {
     // Just build the form
-    return \Drupal::formBuilder()->getForm('Drupal\representative_lookup\Form\PostalLookupBlock');
+    return \Drupal::formBuilder()->getForm('Drupal\representative_lookup\Form\PostalLookupBlockForm');
   }
 
 }
