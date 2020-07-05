@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @Block(
  *   id = "lookup_block",
- *   admin_label = @Translation("Postal Lookup block"),
+ *   admin_label = @Translation("Postal Lookup"),
  *   category = @Translation("Custom"),
  * )
  */
