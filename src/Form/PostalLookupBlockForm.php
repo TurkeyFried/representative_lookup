@@ -42,10 +42,11 @@ class PostalLookupBlockForm extends FormBase {
       '#default_value' => '',
     ];
 
-    // Submit.
+    // Submit
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Lookup'),
+      '#required' => true,
       '#ajax' => [
         'callback' => '::lookupAjax', // don't forget :: when calling a class method.
         'disable-refocus' => FALSE, // Or TRUE to prevent re-focusing on the triggering element.
@@ -58,6 +59,7 @@ class PostalLookupBlockForm extends FormBase {
       ],
     ];
 
+    // Simple Table
     $form['reps-table'] = [
       '#type' => 'table',
       '#header' => array_values(self::HEADERS),
@@ -67,16 +69,6 @@ class PostalLookupBlockForm extends FormBase {
       ],
     ];
 
-    // Finally add the pager.
-    $form['pager'] = [
-      '#type' => 'pager',
-    ];
-
-#element: (optional, int) The pager ID, to distinguish between multiple pagers on the same page (defaults to 0).
-#parameters: (optional) An associative array of query string parameters to append to the pager.
-#quantity: The maximum number of numbered page links to create (defaults to 9).
-#tags: (optional) An array of labels for the controls in the pages.
-#route_name: (optional) The name of the route to be used to build pager links. Defaults to '<none>', which will make links relative to the current URL. This makes the page more effectively cacheable.
     return $form;
   }
 
@@ -140,9 +132,9 @@ class PostalLookupBlockForm extends FormBase {
     $postal = strtoupper($form_state->getValue('postal'));
 
     // per-postal caches
-    $cid = 'representative_lookup:test'. $postal;
+    $cid = 'representative_lookup:'. $postal;
 
-    //$cache = \Drupal::cache()->get($cid);
+    $cache = \Drupal::cache()->get($cid);
 
     if ($cache) {
       $this->reps = $cache->data;
@@ -150,28 +142,24 @@ class PostalLookupBlockForm extends FormBase {
     }
 
     try {
+      // let's cache all the results for this postal code once a day
+      // doesn't seem like the api paginates on postal codes
       $response = \Drupal::httpClient()->get('https://represent.opennorth.ca/postcodes/' . $postal);
+
+      $response = json_decode($response->getBody(), true);
+      $this->reps = $response['representatives_centroid'];
+
     } catch (ClientException $e) {
       // @todo add logging for API errors
       $this->errors[] = $this->t('Error attempting to download representatives. Please check your Postal Code and try again.');
     }
 
-    if (!isset($response) || $response->getStatusCode() != 200) {
-      return;
-    }
-
-    $response = json_decode($response->getBody(), true);
-    $this->reps = $response['representatives_centroid'];
+    // spaceship witchcraft suggested by https://stackoverflow.com/a/2699159/1978219
+    usort($this->reps, function($a, $b) {
+        return $a['representative_set_name'] <=> $b['representative_set_name'];
+    });
 
     \Drupal::cache()->set($cid, $this->reps, strtotime('+1 day'));
   }
 
 }
-
-// "meta": {
-//   "next": "/candidates/?limit=20&offset=20",
-//   "total_count": 597,
-//   "previous": null,
-//   "offset": 0,
-//   "limit": 20
-// }
